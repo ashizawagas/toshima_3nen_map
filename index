@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏛️ 豊島区文化財すごろく 🎲</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            margin: 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #FFB6C1 0%, #87CEEB 50%, #98FB98 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 3px solid #FF69B4;
+        }
+        
+        .title {
+            text-align: center;
+            color: #FF1493;
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-weight: 700;
+            background: linear-gradient(45deg, #FF1493, #FF69B4, #FFB6C1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .setup-screen {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #FFF0F5, #F0F8FF);
+            border-radius: 15px;
+            border: 3px dashed #FF69B4;
+        }
+        
+        .setup-screen h2 {
+            color: #FF1493;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+        
+        .setup-screen h3 {
+            color: #4169E1;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+        
+        .player-setup {
+            margin: 20px 0;
+        }
+        
+        .player-input {
+            margin: 6px;
+            padding: 10px 12px;
+            border: 2px solid #FFB6C1;
+            border-radius: 12px;
+            font-size: 14px;
+            background: #FFF0F5;
+            transition: all 0.3s;
+        }
+        
+        .player-input:focus {
+            border-color: #FF1493;
+            outline: none;
+            transform: scale(1.02);
+        }
+        
+        .time-setup {
+            margin: 20px 0;
+        }
+        
+        .time-input {
+            padding: 10px 12px;
+            border: 2px solid #87CEEB;
+            border-radius: 12px;
+            font-size: 16px;
+            width: 100px;
+            background: #F0F8FF;
+            text-align: center;
+        }
+        
+        .start-btn {
+            background: linear-gradient(45deg, #FF69B4, #FF1493);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 12px rgba(255, 105, 180, 0.4);
+            font-weight: 700;
+        }
+        
+        .start-btn:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 105, 180, 0.6);
+        }
+        
+        .game-screen {
+            display: none;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #FFE4E1, #E6E6FA);
+            padding: 12px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #DDA0DD;
+        }
+        
+        .timer {
+            font-size: 20px;
+            font-weight: bold;
+            color: #DC143C;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 12px;
+            border: 2px solid #DC143C;
+        }
+        
+        .current-player {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4169E1;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 12px;
+            border: 2px solid #4169E1;
+        }
+        
+        .board-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 450px;
+            margin: 15px auto;
+            overflow: hidden;
+            border: 3px solid #32CD32;
+            border-radius: 15px;
+            background: #F0FFF0;
+        }
+        
+        .board {
+            position: relative;
+            width: 900px;
+            height: 450px;
+            background: linear-gradient(135deg, #E0FFE0 0%, #E6F3FF 50%, #FFF8DC 100%);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .route-line {
+            position: absolute;
+            background: linear-gradient(45deg, #FF69B4, #87CEEB);
+            height: 3px;
+            z-index: 1;
+            border-radius: 2px;
+            opacity: 0.7;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .square {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border: 2px solid #FF1493;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #FFF, #FFE4E1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            color: #8B0000;
+            overflow: hidden;
+            z-index: 5;
+        }
+        
+        .square:hover {
+            transform: scale(1.2);
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(255, 20, 147, 0.4);
+        }
+        
+        .player-piece {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 20;
+        }
+        
+        .dice-container {
+            text-align: center;
+            margin: 15px 0;
+            background: linear-gradient(135deg, #FFE4E1, #F0F8FF);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #FF69B4;
+        }
+        
+        .dice {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #FFF, #FFE4E1);
+            border: 3px solid #FF1493;
+            border-radius: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: bounce 2s infinite;
+            box-shadow: 0 4px 8px rgba(255, 20, 147, 0.3);
+        }
+        
+        .dice:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        .roll-btn {
+            background: linear-gradient(45deg, #32CD32, #228B22);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(50, 205, 50, 0.4);
+            font-weight: 700;
+        }
+        
+        .roll-btn:hover {
+            transform: scale(1.05) translateY(-2px);
+        }
+        
+        .quiz-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .quiz-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #FFF0F5, #F0F8FF);
+            padding: 20px;
+            border-radius: 20px;
+            max-width: 550px;
+            width: 90%;
+            text-align: center;
+            border: 3px solid #FF69B4;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .quiz-content h3 {
+            color: #FF1493;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .quiz-image {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 2px solid #FFB6C1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .quiz-question {
+            font-size: 1em;
+            color: #4169E1;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+        
+        .quiz-options {
+            margin: 15px 0;
+        }
+        
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin: 6px 0;
+            background: linear-gradient(135deg, #FFF, #FFE4E1);
+            border: 2px solid #FFB6C1;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #8B0000;
+        }
+        
+        .quiz-option:hover {
+            background: linear-gradient(135deg, #FFE4E1, #FFF0F5);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(255, 182, 193, 0.4);
+        }
+        
+        .quiz-option.correct {
+            background: linear-gradient(135deg, #90EE90, #98FB98);
+            border-color: #32CD32;
+            color: #006400;
+        }
+        
+        .quiz-option.incorrect {
+            background: linear-gradient(135deg, #FFB6C1, #FFA0B4);
+            border-color: #DC143C;
+            color: #8B0000;
+        }
+        
+        .quiz-result {
+            background: linear-gradient(135deg, #F0F8FF, #E6E6FA);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px 0;
+            border: 2px solid #DDA0DD;
+        }
+        
+        .quiz-result h4 {
+            font-size: 1.2em;
+            margin-bottom: 8px;
+        }
+        
+        .quiz-result p {
+            font-size: 0.9em;
+            line-height: 1.4;
+            margin: 8px 0;
+        }
+        
+        .players-info {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            background: linear-gradient(135deg, #E6E6FA, #F0F8FF);
+            padding: 10px;
+            border-radius: 12px;
+            border: 2px solid #DDA0DD;
+        }
+        
+        .player-info {
+            background: linear-gradient(135deg, #FFF, #FFE4E1);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 4px;
+            min-width: 100px;
+            text-align: center;
+            border: 2px solid #FFB6C1;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        
+        .player-info.current {
+            background: linear-gradient(135deg, #FFD700, #FFF8DC);
+            border: 2px solid #FF8C00;
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(255, 140, 0, 0.4);
+        }
+        
+        .player-info .player-name {
+            font-weight: bold;
+            font-size: 1em;
+            margin-bottom: 3px;
+        }
+        
+        .player-info .player-score {
+            font-size: 0.9em;
+            color: #4169E1;
+        }
+        
+        .result-screen {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #FFF0F5, #F0F8FF);
+            border-radius: 15px;
+            border: 3px solid #FF69B4;
+        }
+        
+        .winner {
+            font-size: 2.5em;
+            color: #FF1493;
+            margin: 15px 0;
+            animation: celebration 2s infinite;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        @keyframes celebration {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(5deg); }
+            75% { transform: scale(1.1) rotate(-5deg); }
+        }
+        
+        .final-scores {
+            background: linear-gradient(135deg, #E6E6FA, #F0F8FF);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            border: 2px solid #DDA0DD;
+        }
+        
+        .final-scores h3 {
+            color: #4169E1;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        
+        .score-item {
+            margin: 10px 0;
+            font-size: 1.1em;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #FFB6C1;
+        }
+        
+        /* スクロールバーのカスタマイズ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #FFE4E1;
+            border-radius: 8px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #FF69B4, #FF1493);
+            border-radius: 8px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #FF1493, #DC143C);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🏛️ 豊島区文化財すごろく 🎲</h1>
+        
+        <!-- セットアップ画面 -->
+        <div class="setup-screen" id="setupScreen">
+            <h2>🎮 ゲーム設定 🎮</h2>
+            <div class="player-setup">
+                <h3>👦👧 プレイヤー名を入力してください（2-6人）</h3>
+                <input type="text" class="player-input" id="player1" placeholder="🌟 プレイヤー1の名前">
+                <input type="text" class="player-input" id="player2" placeholder="⭐ プレイヤー2の名前">
+                <input type="text" class="player-input" id="player3" placeholder="🌈 プレイヤー3の名前（任意）">
+                <input type="text" class="player-input" id="player4" placeholder="🎨 プレイヤー4の名前（任意）">
+                <input type="text" class="player-input" id="player5" placeholder="🎪 プレイヤー5の名前（任意）">
+                <input type="text" class="player-input" id="player6" placeholder="🎭 プレイヤー6の名前（任意）">
+            </div>
+            <div class="time-setup">
+                <h3>⏰ ゲーム時間を設定してください</h3>
+                <input type="number" class="time-input" id="gameTime" value="5" min="1" max="30"> 分
+            </div>
+            <button class="start-btn" onclick="startGame()">🚀 ゲーム開始！ 🚀</button>
+        </div>
+        
+        <!-- ゲーム画面 -->
+        <div class="game-screen" id="gameScreen">
+            <div class="game-info">
+                <div class="timer" id="timer">⏰ 残り時間: 5:00</div>
+                <div class="current-player" id="currentPlayer">👑 プレイヤー1のターン</div>
+            </div>
+            
+            <div class="players-info" id="playersInfo"></div>
+            
+            <div class="board-container">
+                <div class="board" id="gameBoard"></div>
+            </div>
+            
+            <div class="dice-container">
+                <div class="dice" id="dice">🎲</div>
+                <br>
+                <button class="roll-btn" id="rollBtn" onclick="rollDice()">🎲 サイコロを振る 🎲</button>
+            </div>
+        </div>
+        
+        <!-- クイズモーダル -->
+        <div class="quiz-modal" id="quizModal">
+            <div class="quiz-content">
+                <h3 id="quizTitle">🏛️ 文化財クイズ 🏛️</h3>
+                <img id="quizImage" class="quiz-image" src="" alt="文化財の写真">
+                <p id="quizQuestion" class="quiz-question"></p>
+                <div class="quiz-options" id="quizOptions"></div>
+                <div id="quizResult" class="quiz-result" style="display: none;">
+                    <h4 id="resultText"></h4>
+                    <p id="explanation"></p>
+                    <p id="source"></p>
+                    <button class="roll-btn" onclick="closeQuiz()">✨ つぎへ ✨</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 結果画面 -->
+        <div class="result-screen" id="resultScreen">
+            <div class="winner" id="winner">🎉 優勝者 🎉</div>
+            <div class="final-scores" id="finalScores"></div>
+            <button class="start-btn" onclick="location.reload()">🔄 もう一度プレイ 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // ゲーム状態
+        let gameState = {
+            players: [],
+            currentPlayerIndex: 0,
+            timeLeft: 300,
+            gameTimer: null,
+            isGameRunning: false
+        };
+
+        // プレイヤーの色（かわいい色合い）
+        const playerColors = ['#FF69B4', '#32CD32', '#4169E1', '#FF8C00', '#9370DB', '#DC143C'];
+
+        // 豊島区の文化財データ（豊島区役所をサンシャインシティの南に移動）
+        const culturalSites = [
+            {
+                name: "暗きょになった千川上水と庚申塔",
+                position: { x: 50, y: 50 },
+                image: "https://natrium.jp/canal_lot/josui/igusa/index.html",
+                quiz: {
+                    question: "千川上水は何年に完成したでしょうか？",
+                    options: ["1696年", "1700年", "1722年", "1750年"],
+                    correct: 0,
+                    explanation: "千川上水は元禄9年（1696年）に完成し、江戸市中の飲み水確保のために玉川上水から分水された重要な上水でした。庚申塔は道の安全を祈る石塔です。",
+                    source: "千川上水の歴史"
+                }
+            },
+            {
+                name: "金剛院の板碑",
+                position: { x: 120, y: 80 },
+                image: "https://www.city.toshima.lg.jp/images/41614/kongouinnsanmon.jpg",
+                quiz: {
+                    question: "金剛院は「○○もん寺」という愛称で親しまれています。○○に入る言葉は？",
+                    options: ["赤もん", "黒もん", "白もん", "青もん"],
+                    correct: 0,
+                    explanation: "金剛院は「赤もん寺」という愛称で親しまれており、朱色の美しい山門が印象的です。板碑は中世の石造供養塔です。",
+                    source: "豊島区文化財"
+                }
+            },
+            {
+                name: "豊島長崎の富士塚",
+                position: { x: 190, y: 120 },
+                image: "https://www.city.toshima.lg.jp/images/34447/nagaskijinja_01.jpg",
+                quiz: {
+                    question: "富士塚は何のために作られたでしょうか？",
+                    options: ["富士山信仰", "防災", "農業", "交通"],
+                    correct: 0,
+                    explanation: "富士塚は富士山信仰の一環として、富士山に登れない人々のために作られた人工の山です。豊島区内には貴重な富士塚が残されています。",
+                    source: "豊島区文化財"
+                }
+            },
+            {
+                name: "鬼子母神堂",
+                position: { x: 480, y: 280 },
+                image: "https://www.city.toshima.lg.jp/images/34371/kisiboji_103.jpg",
+                quiz: {
+                    question: "雑司ヶ谷鬼子母神堂で有名な行事は何でしょうか？",
+                    options: ["お会式万灯練供養", "七夕祭り", "節分祭", "花火大会"],
+                    correct: 0,
+                    explanation: "雑司ヶ谷鬼子母神堂では、毎年10月に「お会式万灯練供養」が行われ、豊島区の無形民俗文化財に指定されています。",
+                    source: "豊島区公式サイト"
+                }
+            },
+            {
+                name: "地蔵菩薩立像",
+                position: { x: 540, y: 320 },
+                image: "https://www.city.toshima.lg.jp/images/34368/homyoji01.jpg",
+                quiz: {
+                    question: "地蔵菩薩は主に何を守る仏様でしょうか？",
+                    options: ["子どもと旅人", "商売", "学問", "健康"],
+                    correct: 0,
+                    explanation: "地蔵菩薩は子どもや旅人を守る仏様として親しまれ、道端でよく見かけます。",
+                    source: "仏教文化"
+                }
+            },
+            {
+                name: "興禅寺の桜",
+                position: { x: 600, y: 200 },
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Honno-ji_%28Toshima%2C_Tokyo%29.JPG/500px-Honno-ji_%28Toshima%2C_Tokyo%29.JPG",
+                quiz: {
+                    question: "興禅寺で有名な花は何でしょうか？",
+                    options: ["桜", "梅", "つつじ", "紫陽花"],
+                    correct: 0,
+                    explanation: "興禅寺は美しい桜で有名で、春になると多くの人が花見に訪れます。",
+                    source: "豊島区観光ガイド"
+                }
+            },
+            {
+                name: "駒込のサクラ",
+                position: { x: 670, y: 150 },
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Komagome-Station-North-exit.JPG/500px-Komagome-Station-North-exit.JPG",
+                quiz: {
+                    question: "駒込周辺で有名な桜の名所は何でしょうか？",
+                    options: ["六義園", "小石川後楽園", "新宿御苑", "皇居東御苑"],
+                    correct: 0,
+                    explanation: "駒込周辺には六義園があり、美しい桜で有名な江戸時代の代表的な大名庭園です。",
+                    source: "東京都公園協会"
+                }
+            },
+            {
+                name: "トキワ荘",
+                position: { x: 120, y: 160 },
+                image: "https://www.city.toshima.lg.jp/images/34399/toshimakuritsutokiwasoumangamyuujiamu01.jpg",
+                quiz: {
+                    question: "トキワ荘で活動していた有名な漫画家は誰でしょうか？",
+                    options: ["手塚治虫", "藤子不二雄", "石ノ森章太郎", "全員"],
+                    correct: 3,
+                    explanation: "トキワ荘には手塚治虫、藤子不二雄、石ノ森章太郎など多くの有名漫画家が住んでいました。",
+                    source: "トキワ荘マンガミュージアム"
+                }
+            },
+            {
+                name: "自由学園明日館",
+                position: { x: 240, y: 260 },
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Mejiro-Station-Building.jpg/500px-Mejiro-Station-Building.jpg",
+                quiz: {
+                    question: "自由学園明日館を設計した建築家は誰でしょうか？",
+                    options: ["フランク・ロイド・ライト", "アントニオ・ガウディ", "ル・コルビュジエ", "安藤忠雄"],
+                    correct: 0,
+                    explanation: "自由学園明日館は世界的建築家フランク・ロイド・ライトが設計した貴重な建築物です。重要文化財に指定されており、近代建築の傑作として知られています。",
+                    source: "自由学園明日館"
+                }
+            },
+            {
+                name: "御嶽神社",
+                position: { x: 820, y: 250 },
+                image: "https://www.city.toshima.lg.jp/images/34447/nagaskijinja_01.jpg",
+                quiz: {
+                    question: "御嶽神社は主に何の神様を祀っているでしょうか？",
+                    options: ["山の神", "海の神", "風の神", "火の神"],
+                    correct: 0,
+                    explanation: "御嶽神社は山の神を祀る神社で、古くから山岳信仰の中心地として親しまれています。",
+                    source: "神社庁"
+                }
+            },
+            {
+                name: "西原不動尊",
+                position: { x: 50, y: 350 },
+                image: "https://www.city.toshima.lg.jp/images/34368/homyoji01.jpg",
+                quiz: {
+                    question: "西原不動尊の不動明王は何を表す仏様でしょうか？",
+                    options: ["煩悩を断つ力", "智慧", "慈悲", "平和"],
+                    correct: 0,
+                    explanation: "西原不動尊の不動明王は煩悩を断ち切る強い力を表す仏様で、厄除けや魔除けの信仰があります。地域の人々に親しまれている霊場です。",
+                    source: "豊島区文化財"
+                }
+            },
+            {
+                name: "東京芸術劇場",
+                position: { x: 240, y: 200 },
+                image: "https://geigeki.jp/about/images/appearance.jpg",
+                quiz: {
+                    question: "東京芸術劇場の特徴的な建築デザインは何でしょうか？",
+                    options: ["円形のコンサートホール", "三角形の屋根", "四角い建物", "船の形"],
+                    correct: 0,
+                    explanation: "東京芸術劇場は円形のコンサートホールが特徴的で、優れた音響効果を持つ美しい建築です。",
+                    source: "東京芸術劇場公式サイト"
+                }
+            },
+            {
+                name: "立教大学",
+                position: { x: 180, y: 220 },
+                image: "https://www.rikkyo.ac.jp/about/activities/social_engagement/mknpps000001rsx1-img/mknpps000001rsz4.jpg",
+                quiz: {
+                    question: "立教大学の象徴的な建物は何でしょうか？",
+                    options: ["赤レンガの校舎", "白い校舎", "ガラスの校舎", "木造の校舎"],
+                    correct: 0,
+                    explanation: "立教大学は美しい赤レンガの校舎で有名です。歴史ある建物は多くの人に愛され続けています。",
+                    source: "立教大学公式サイト"
+                }
+            },
+            {
+                name: "サンシャインシティ",
+                position: { x: 350, y: 220 },
+                image: "https://ja.wikipedia.org/wiki/%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB:Sunshine_City_2012.JPG",
+                quiz: {
+                    question: "サンシャインシティの中にある水族館の名前は何でしょうか？",
+                    options: ["サンシャイン水族館", "池袋水族館", "豊島水族館", "東京水族館"],
+                    correct: 0,
+                    explanation: "サンシャインシティの屋上にあるサンシャイン水族館は「天空のオアシス」として親しまれています。",
+                    source: "サンシャインシティ公式サイト"
+                }
+            },
+            {
+                name: "豊島区役所",
+                position: { x: 350, y: 280 },
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/2024_Toshima_Ecomusee_Town.jpg/500px-2024_Toshima_Ecomusee_Town.jpg",
+                quiz: {
+                    question: "豊島区役所の新庁舎は何年に完成したでしょうか？",
+                    options: ["2015年", "2016年", "2017年", "2018年"],
+                    correct: 0,
+                    explanation: "豊島区役所の新庁舎は2015年に完成し、環境に配慮したエコミューゼタウンとして注目されています。",
+                    source: "豊島区公式サイト"
+                }
+            },
+            {
+                name: "池袋駅",
+                position: { x: 300, y: 200 },
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/East_entrance_of_Ikebukuro_Station_2023-11-09.jpg/500px-East_entrance_of_Ikebukuro_Station_2023-11-09.jpg",
+                quiz: {
+                    question: "池袋駅は1日の乗降客数が世界で何位でしょうか？",
+                    options: ["1位", "2位", "3位", "4位"],
+                    correct: 1,
+                    explanation: "池袋駅は1日の乗降客数が世界第2位の巨大ターミナル駅です。",
+                    source: "JR東日本"
+                }
+            },
+            {
+                name: "大塚駅",
+                position: { x: 380, y: 120 },
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Otsuka_Station_North.jpg/500px-Otsuka_Station_North.jpg",
+                quiz: {
+                    question: "大塚駅周辺で有名な食べ物は何でしょうか？",
+                    options: ["ちゃんこ鍋", "ラーメン", "うどん", "そば"],
+                    correct: 0,
+                    explanation: "大塚駅周辺はちゃんこ鍋で有名で、多くのちゃんこ鍋店が軒を連ねています。相撲部屋も多い地域です。",
+                    source: "大塚観光協会"
+                }
+            },
+            {
+                name: "巣鴨駅",
+                position: { x: 450, y: 100 },
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Sugamo-Sta-Building.JPG/500px-Sugamo-Sta-Building.JPG",
+                quiz: {
+                    question: "巣鴨は「おばあちゃんの○○」と呼ばれています。○○に入る言葉は？",
+                    options: ["原宿", "渋谷", "新宿", "銀座"],
+                    correct: 0,
+                    explanation: "巣鴨は「おばあちゃんの原宿」として親しまれ、とげぬき地蔵で有名な高岩寺があります。",
+                    source: "巣鴨地蔵通り商店街"
+                }
+            },
+            {
+                name: "法明寺",
+                position: { x: 500, y: 180 },
+                image: "https://www.city.toshima.lg.jp/images/34368/homyoji01.jpg",
+                quiz: {
+                    question: "法明寺の三重塔は何時代に建てられたでしょうか？",
+                    options: ["江戸時代", "明治時代", "大正時代", "昭和時代"],
+                    correct: 0,
+                    explanation: "法明寺の三重塔は江戸時代に建てられた貴重な建造物です。高さ約33メートルの美しい塔は、豊島区のシンボルの一つです。",
+                    source: "豊島区文化財マップ"
+                }
+            },
+            {
+                name: "目白庭園",
+                position: { x: 680, y: 240 },
+                image: "https://www.city.toshima.lg.jp/images/34377/mejiroteien_01.jpg",
+                quiz: {
+                    question: "目白庭園はどのような様式の庭園でしょうか？",
+                    options: ["日本庭園", "洋風庭園", "中国庭園", "イタリア庭園"],
+                    correct: 0,
+                    explanation: "目白庭園は美しい日本庭園で、四季折々の自然を楽しむことができます。池を中心とした回遊式庭園で、都心のオアシスです。",
+                    source: "豊島区公式サイト"
+                }
+            },
+            {
+                name: "豊島区立郷土資料館",
+                position: { x: 400, y: 220 },
+                image: "https://www.city.toshima.lg.jp/images/23995/1.jpg",
+                quiz: {
+                    question: "豊島区立郷土資料館のマスコットキャラクターは何でしょうか？",
+                    options: ["むじなくん", "たぬきくん", "きつねくん", "うさぎくん"],
+                    correct: 0,
+                    explanation: "豊島区立郷土資料館のマスコットは「むじなくん」で、長崎地域に伝わるお話に由来しています。とってもかわいいキャラクターです！",
+                    source: "豊島区立郷土資料館"
+                }
+            },
+            {
+                name: "長崎神社",
+                position: { x: 100, y: 240 },
+                image: "https://www.city.toshima.lg.jp/images/34447/nagaskijinja_01.jpg",
+                quiz: {
+                    question: "長崎神社に伝わる豊島区唯一の伝統芸能は何でしょうか？",
+                    options: ["長崎獅子舞", "長崎太鼓", "長崎踊り", "長崎囃子"],
+                    correct: 0,
+                    explanation: "長崎神社には元禄年間に由来する長崎獅子舞が伝わり、豊島区の有形・無形文化財に指定されています。毎年秋祭りで披露されます。",
+                    source: "豊島区文化財"
+                }
+            },
+            {
+                name: "目白駅",
+                position: { x: 700, y: 340 },
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Mejiro-Station-Building.jpg/500px-Mejiro-Station-Building.jpg",
+                quiz: {
+                    question: "目白駅周辺で有名な教育機関は何でしょうか？",
+                    options: ["学習院大学", "早稲田大学", "慶應義塾大学", "上智大学"],
+                    correct: 0,
+                    explanation: "目白駅周辺には学習院大学があり、皇族も通う由緒ある大学として知られています。美しいキャンパスで有名です。",
+                    source: "学習院大学"
+                }
+            },
+            {
+                name: "池袋東貝塚",
+                position: { x: 450, y: 200 },
+                image: "https://www.city.toshima.lg.jp/images/23709/kaidukazentaishukushou.jpg",
+                quiz: {
+                    question: "池袋東貝塚は主に何時代の遺跡でしょうか？",
+                    options: ["縄文時代", "弥生時代", "古墳時代", "平安時代"],
+                    correct: 0,
+                    explanation: "池袋東貝塚は縄文時代を中心とした貝塚で、当時の人々の生活を知る重要な遺跡です。ハマグリやハイガイなどの貝、獣骨や魚骨とともに、縄文時代後期の土器や石器が多数出土しています。",
+                    source: "豊島区文化財"
+                }
+            }
+        ];
+
+        // 選択肢をシャッフルする関数
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function startGame() {
+            // プレイヤー名の取得
+            const playerInputs = document.querySelectorAll('.player-input');
+            gameState.players = [];
+            
+            playerInputs.forEach((input, index) => {
+                if (input.value.trim()) {
+                    gameState.players.push({
+                        name: input.value.trim(),
+                        position: 0,
+                        score: 0,
+                        color: playerColors[index]
+                    });
+                }
+            });
+
+            if (gameState.players.length < 2) {
+                alert('🚨 最低2人のプレイヤーが必要です！');
+                return;
+            }
+
+            // ゲーム時間の設定
+            const gameTime = parseInt(document.getElementById('gameTime').value);
+            gameState.timeLeft = gameTime * 60;
+
+            // 画面切り替え
+            document.getElementById('setupScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+
+            // ゲーム初期化
+            initializeGame();
+        }
+
+        function initializeGame() {
+            createBoard();
+            createPlayerPieces();
+            updatePlayersInfo();
+            startTimer();
+            gameState.isGameRunning = true;
+        }
+
+        function createBoard() {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = '';
+
+            // ルート線を描画
+            createRouteLines(board);
+
+            // マスを描画
+            culturalSites.forEach((site, index) => {
+                const square = document.createElement('div');
+                square.className = 'square';
+                square.style.left = site.position.x + 'px';
+                square.style.top = site.position.y + 'px';
+                square.textContent = site.name;
+                square.id = `square-${index}`;
+                square.title = site.name;
+                board.appendChild(square);
+            });
+        }
+
+        function createRouteLines(board) {
+            for (let i = 0; i < culturalSites.length; i++) {
+                const currentSite = culturalSites[i];
+                const nextSite = culturalSites[(i + 1) % culturalSites.length];
+                
+                // 2点間の距離と角度を計算
+                const dx = nextSite.position.x - currentSite.position.x;
+                const dy = nextSite.position.y - currentSite.position.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                // 線を作成
+                const line = document.createElement('div');
+                line.className = 'route-line';
+                line.style.width = distance + 'px';
+                line.style.left = (currentSite.position.x + 22.5) + 'px'; // マスの中心から
+                line.style.top = (currentSite.position.y + 22.5) + 'px';
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.transformOrigin = '0 50%';
+                
+                board.appendChild(line);
+            }
+        }
+
+        function createPlayerPieces() {
+            const board = document.getElementById('gameBoard');
+            
+            gameState.players.forEach((player, index) => {
+                const piece = document.createElement('div');
+                piece.className = 'player-piece';
+                piece.style.backgroundColor = player.color;
+                piece.textContent = (index + 1).toString();
+                piece.id = `player-${index}`;
+                piece.title = player.name;
+                
+                // 最初のマスに配置（重ならないように調整）
+                const firstSquare = culturalSites[0];
+                piece.style.left = (firstSquare.position.x + 10 + (index * 6)) + 'px';
+                piece.style.top = (firstSquare.position.y + 10 + (index * 3)) + 'px';
+                
+                board.appendChild(piece);
+            });
+        }
+
+        function updatePlayersInfo() {
+            const playersInfo = document.getElementById('playersInfo');
+            playersInfo.innerHTML = '';
+
+            gameState.players.forEach((player, index) => {
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'player-info';
+                if (index === gameState.currentPlayerIndex) {
+                    playerDiv.classList.add('current');
+                }
+                playerDiv.innerHTML = `
+                    <div class="player-name" style="color: ${player.color};">
+                        ${index === gameState.currentPlayerIndex ? '👑 ' : ''}${player.name}
+                    </div>
+                    <div class="player-score">🏆 ${player.score}点</div>
+                `;
+                playersInfo.appendChild(playerDiv);
+            });
+
+            document.getElementById('currentPlayer').innerHTML = 
+                `👑 ${gameState.players[gameState.currentPlayerIndex].name}のターン`;
+        }
+
+        function startTimer() {
+            gameState.gameTimer = setInterval(() => {
+                gameState.timeLeft--;
+                updateTimerDisplay();
+                
+                if (gameState.timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(gameState.timeLeft / 60);
+            const seconds = gameState.timeLeft % 60;
+            document.getElementById('timer').innerHTML = 
+                `⏰ 残り時間: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function rollDice() {
+            if (!gameState.isGameRunning) return;
+
+            const dice = document.getElementById('dice');
+            const rollBtn = document.getElementById('rollBtn');
+            
+            rollBtn.disabled = true;
+            rollBtn.textContent = '🎲 振っています... 🎲';
+            
+            // サイコロアニメーション
+            let rollCount = 0;
+            const rollAnimation = setInterval(() => {
+                dice.textContent = Math.floor(Math.random() * 6) + 1;
+                rollCount++;
+                
+                if (rollCount > 15) {
+                    clearInterval(rollAnimation);
+                    const finalRoll = Math.floor(Math.random() * 6) + 1;
+                    dice.textContent = finalRoll;
+                    movePlayer(finalRoll);
+                }
+            }, 100);
+        }
+
+        function movePlayer(steps) {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            const newPosition = (currentPlayer.position + steps) % culturalSites.length;
+            currentPlayer.position = newPosition;
+
+            // プレイヤーピースの移動アニメーション（ゆっくりに変更）
+            const piece = document.getElementById(`player-${gameState.currentPlayerIndex}`);
+            const targetSquare = culturalSites[newPosition];
+            
+            piece.style.left = (targetSquare.position.x + 10 + (gameState.currentPlayerIndex * 6)) + 'px';
+            piece.style.top = (targetSquare.position.y + 10 + (gameState.currentPlayerIndex * 3)) + 'px';
+
+            // クイズ表示（アニメーション時間に合わせて調整）
+            setTimeout(() => {
+                showQuiz(newPosition);
+            }, 1200);
+        }
+
+        function showQuiz(siteIndex) {
+            const site = culturalSites[siteIndex];
+            const modal = document.getElementById('quizModal');
+            
+            document.getElementById('quizTitle').innerHTML = `🏛️ ${site.name} 🏛️`;
+            
+            const quizImage = document.getElementById('quizImage');
+            quizImage.src = site.image;
+            quizImage.alt = site.name + 'の写真';
+            quizImage.onerror = function() {
+                this.style.display = 'none';
+            };
+            
+            document.getElementById('quizQuestion').textContent = site.quiz.question;
+            
+            // 選択肢をシャッフル
+            const optionsWithIndex = site.quiz.options.map((option, index) => ({
+                text: option,
+                originalIndex: index,
+                isCorrect: index === site.quiz.correct
+            }));
+            
+            const shuffledOptions = shuffleArray(optionsWithIndex);
+            
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            
+            shuffledOptions.forEach((option, displayIndex) => {
+                const button = document.createElement('button');
+                button.className = 'quiz-option';
+                button.textContent = `${displayIndex + 1}. ${option.text}`;
+                button.onclick = () => answerQuiz(option.isCorrect, site.quiz, button);
+                optionsContainer.appendChild(button);
+            });
+            
+            document.getElementById('quizResult').style.display = 'none';
+            modal.style.display = 'block';
+        }
+
+        function answerQuiz(isCorrect, quiz, selectedButton) {
+            const options = document.querySelectorAll('.quiz-option');
+            
+            options.forEach((option) => {
+                option.onclick = null;
+                const optionText = option.textContent.substring(3); // "1. " を除去
+                const isCorrectOption = optionText === quiz.options[quiz.correct];
+                
+                if (isCorrectOption) {
+                    option.classList.add('correct');
+                } else if (option === selectedButton && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            if (isCorrect) {
+                gameState.players[gameState.currentPlayerIndex].score += 10;
+                document.getElementById('resultText').innerHTML = '🎉 せいかい！ +10ポイント 🎉';
+                document.getElementById('resultText').style.color = '#32CD32';
+            } else {
+                document.getElementById('resultText').innerHTML = '❌ ざんねん！でも だいじょうぶ ❌';
+                document.getElementById('resultText').style.color = '#DC143C';
+            }
+            
+            document.getElementById('explanation').textContent = quiz.explanation;
+            document.getElementById('source').innerHTML = `📚 出典: ${quiz.source}`;
+            document.getElementById('quizResult').style.display = 'block';
+        }
+
+        function closeQuiz() {
+            document.getElementById('quizModal').style.display = 'none';
+            
+            // 次のプレイヤーのターン
+            gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+            updatePlayersInfo();
+            
+            const rollBtn = document.getElementById('rollBtn');
+            rollBtn.disabled = false;
+            rollBtn.textContent = '🎲 サイコロを振る 🎲';
+        }
+
+        function endGame() {
+            clearInterval(gameState.gameTimer);
+            gameState.isGameRunning = false;
+            
+            // 最高得点者を決定
+            const winner = gameState.players.reduce((prev, current) => 
+                prev.score > current.score ? prev : current
+            );
+            
+            // 結果画面表示
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+            
+            document.getElementById('winner').innerHTML = `🎉 ${winner.name} のかち！ 🎉`;
+            
+            const finalScores = document.getElementById('finalScores');
+            finalScores.innerHTML = '<h3>🏆 さいしゅうけっか 🏆</h3>';
+            
+            // スコア順にソート
+            const sortedPlayers = [...gameState.players].sort((a, b) => b.score - a.score);
+            
+            sortedPlayers.forEach((player, index) => {
+                const scoreDiv = document.createElement('div');
+                scoreDiv.className = 'score-item';
+                const medals = ['🥇', '🥈', '🥉', '🏅', '🏅', '🏅'];
+                scoreDiv.innerHTML = `
+                    <span style="color: ${player.color}; font-weight: bold;">
+                        ${medals[index]} ${index + 1}い: ${player.name} - ${player.score}てん
+                    </span>
+                `;
+                finalScores.appendChild(scoreDiv);
+            });
+        }
+
+        // エラーハンドリング
+        window.addEventListener('error', function(e) {
+            console.error('エラーが発生しました:', e.error);
+        });
+
+        // 画像読み込みエラーの処理
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                img.addEventListener('error', function() {
+                    this.style.display = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
