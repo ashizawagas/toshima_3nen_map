@@ -21,13 +21,14 @@
         }
         
         .container {
-            max-width: 1250px;
+            max-width: 2160px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
             padding: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             border: 3px solid #FF69B4;
+            position: relative;
         }
         
         .title {
@@ -117,6 +118,7 @@
         
         .game-screen {
             display: none;
+            position: relative;
         }
         
         .game-info {
@@ -150,22 +152,28 @@
             border: 2px solid #4169E1;
         }
         
+        .game-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            position: relative;
+        }
+        
         .board-container {
             position: relative;
-            width: 100%;
-            max-width: 900px;
-            height: 450px;
-            margin: 15px auto;
+            width: 1555px;
+            height: 778px;
             overflow: hidden;
             border: 3px solid #32CD32;
             border-radius: 15px;
             background: #F0FFF0;
+            flex-shrink: 0;
         }
         
         .board {
             position: relative;
-            width: 900px;
-            height: 450px;
+            width: 1555px;
+            height: 778px;
             background: linear-gradient(135deg, #E0FFE0 0%, #E6F3FF 50%, #FFF8DC 100%);
             border-radius: 12px;
             overflow: hidden;
@@ -183,14 +191,14 @@
         
         .square {
             position: absolute;
-            width: 45px;
-            height: 45px;
+            width: 78px;
+            height: 78px;
             border: 2px solid #FF1493;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 7px;
+            font-size: 10px;
             font-weight: bold;
             text-align: center;
             cursor: pointer;
@@ -210,11 +218,11 @@
         
         .player-piece {
             position: absolute;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
+            min-width: 48px;
+            height: 31px;
+            border-radius: 16px;
             border: 2px solid #fff;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
             display: flex;
             align-items: center;
@@ -223,6 +231,9 @@
             transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
             z-index: 20;
+            padding: 0 10px;
+            white-space: nowrap;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
         
         .dice-container {
@@ -476,6 +487,38 @@
             border: 2px solid #FFB6C1;
         }
         
+        /* 画面サイズ調整メッセージ - より下の位置 */
+        .screen-size-message {
+            position: absolute;
+            top: 300px;
+            left: 1640px;
+            background: linear-gradient(135deg, #FFF8DC, #F0F8FF);
+            border: 2px solid #FF69B4;
+            border-radius: 15px;
+            padding: 15px;
+            max-width: 250px;
+            font-size: 14px;
+            color: #4169E1;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(255, 105, 180, 0.3);
+            z-index: 100;
+            line-height: 1.4;
+        }
+        
+        .screen-size-message .icon {
+            font-size: 18px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .screen-size-message .key-highlight {
+            background: #FFE4E1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #DC143C;
+        }
+        
         /* スクロールバーのカスタマイズ */
         ::-webkit-scrollbar {
             width: 8px;
@@ -521,6 +564,15 @@
         
         <!-- ゲーム画面 -->
         <div class="game-screen" id="gameScreen">
+            <!-- 画面サイズ調整メッセージ - より下の位置 -->
+            <div class="screen-size-message">
+                <span class="icon">💡</span>
+                画面のサイズが合わない時は<br>
+                <span class="key-highlight">Ctrl</span>キーを押しながら<br>
+                <span class="key-highlight">+</span>か<span class="key-highlight">-</span>キーを押して<br>
+                調節してください。
+            </div>
+            
             <div class="game-info">
                 <div class="timer" id="timer">⏰ 残り時間: 5:00</div>
                 <div class="current-player" id="currentPlayer">👑 プレイヤー1のターン</div>
@@ -528,8 +580,10 @@
             
             <div class="players-info" id="playersInfo"></div>
             
-            <div class="board-container">
-                <div class="board" id="gameBoard"></div>
+            <div class="game-content">
+                <div class="board-container">
+                    <div class="board" id="gameBoard"></div>
+                </div>
             </div>
             
             <div class="dice-container">
@@ -576,11 +630,11 @@
         // プレイヤーの色（かわいい色合い）
         const playerColors = ['#FF69B4', '#32CD32', '#4169E1', '#FF8C00', '#9370DB', '#DC143C'];
 
-        // 豊島区の文化財データ（豊島区役所をサンシャインシティの南に移動）
+        // 豊島区の文化財データ（さらに20%拡大に合わせて座標調整）
         const culturalSites = [
             {
                 name: "暗きょになった千川上水と庚申塔",
-                position: { x: 50, y: 50 },
+                position: { x: 86, y: 86 },
                 image: "https://natrium.jp/canal_lot/josui/igusa/index.html",
                 quiz: {
                     question: "千川上水は何年に完成したでしょうか？",
@@ -592,7 +646,7 @@
             },
             {
                 name: "金剛院の板碑",
-                position: { x: 120, y: 80 },
+                position: { x: 208, y: 138 },
                 image: "https://www.city.toshima.lg.jp/images/41614/kongouinnsanmon.jpg",
                 quiz: {
                     question: "金剛院は「○○もん寺」という愛称で親しまれています。○○に入る言葉は？",
@@ -604,7 +658,7 @@
             },
             {
                 name: "豊島長崎の富士塚",
-                position: { x: 190, y: 120 },
+                position: { x: 329, y: 208 },
                 image: "https://www.city.toshima.lg.jp/images/34447/nagaskijinja_01.jpg",
                 quiz: {
                     question: "富士塚は何のために作られたでしょうか？",
@@ -616,7 +670,7 @@
             },
             {
                 name: "鬼子母神堂",
-                position: { x: 480, y: 280 },
+                position: { x: 829, y: 484 },
                 image: "https://www.city.toshima.lg.jp/images/34371/kisiboji_103.jpg",
                 quiz: {
                     question: "雑司ヶ谷鬼子母神堂で有名な行事は何でしょうか？",
@@ -628,7 +682,7 @@
             },
             {
                 name: "地蔵菩薩立像",
-                position: { x: 540, y: 320 },
+                position: { x: 934, y: 553 },
                 image: "https://www.city.toshima.lg.jp/images/34368/homyoji01.jpg",
                 quiz: {
                     question: "地蔵菩薩は主に何を守る仏様でしょうか？",
@@ -640,7 +694,7 @@
             },
             {
                 name: "興禅寺の桜",
-                position: { x: 600, y: 200 },
+                position: { x: 1037, y: 346 },
                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Honno-ji_%28Toshima%2C_Tokyo%29.JPG/500px-Honno-ji_%28Toshima%2C_Tokyo%29.JPG",
                 quiz: {
                     question: "興禅寺で有名な花は何でしょうか？",
@@ -652,7 +706,7 @@
             },
             {
                 name: "駒込のサクラ",
-                position: { x: 670, y: 150 },
+                position: { x: 1158, y: 259 },
                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Komagome-Station-North-exit.JPG/500px-Komagome-Station-North-exit.JPG",
                 quiz: {
                     question: "駒込周辺で有名な桜の名所は何でしょうか？",
@@ -664,7 +718,7 @@
             },
             {
                 name: "トキワ荘",
-                position: { x: 120, y: 160 },
+                position: { x: 208, y: 276 },
                 image: "https://www.city.toshima.lg.jp/images/34399/toshimakuritsutokiwasoumangamyuujiamu01.jpg",
                 quiz: {
                     question: "トキワ荘で活動していた有名な漫画家は誰でしょうか？",
@@ -676,7 +730,7 @@
             },
             {
                 name: "自由学園明日館",
-                position: { x: 240, y: 260 },
+                position: { x: 415, y: 449 },
                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Mejiro-Station-Building.jpg/500px-Mejiro-Station-Building.jpg",
                 quiz: {
                     question: "自由学園明日館を設計した建築家は誰でしょうか？",
@@ -688,7 +742,7 @@
             },
             {
                 name: "御嶽神社",
-                position: { x: 820, y: 250 },
+                position: { x: 1417, y: 432 },
                 image: "https://www.city.toshima.lg.jp/images/34447/nagaskijinja_01.jpg",
                 quiz: {
                     question: "御嶽神社は主に何の神様を祀っているでしょうか？",
@@ -700,7 +754,7 @@
             },
             {
                 name: "西原不動尊",
-                position: { x: 50, y: 350 },
+                position: { x: 86, y: 605 },
                 image: "https://www.city.toshima.lg.jp/images/34368/homyoji01.jpg",
                 quiz: {
                     question: "西原不動尊の不動明王は何を表す仏様でしょうか？",
@@ -712,7 +766,7 @@
             },
             {
                 name: "東京芸術劇場",
-                position: { x: 240, y: 200 },
+                position: { x: 415, y: 346 },
                 image: "https://geigeki.jp/about/images/appearance.jpg",
                 quiz: {
                     question: "東京芸術劇場の特徴的な建築デザインは何でしょうか？",
@@ -724,7 +778,7 @@
             },
             {
                 name: "立教大学",
-                position: { x: 180, y: 220 },
+                position: { x: 311, y: 380 },
                 image: "https://www.rikkyo.ac.jp/about/activities/social_engagement/mknpps000001rsx1-img/mknpps000001rsz4.jpg",
                 quiz: {
                     question: "立教大学の象徴的な建物は何でしょうか？",
@@ -736,7 +790,7 @@
             },
             {
                 name: "サンシャインシティ",
-                position: { x: 350, y: 220 },
+                position: { x: 605, y: 380 },
                 image: "https://ja.wikipedia.org/wiki/%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB:Sunshine_City_2012.JPG",
                 quiz: {
                     question: "サンシャインシティの中にある水族館の名前は何でしょうか？",
@@ -748,7 +802,7 @@
             },
             {
                 name: "豊島区役所",
-                position: { x: 350, y: 280 },
+                position: { x: 605, y: 484 },
                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/2024_Toshima_Ecomusee_Town.jpg/500px-2024_Toshima_Ecomusee_Town.jpg",
                 quiz: {
                     question: "豊島区役所の新庁舎は何年に完成したでしょうか？",
@@ -760,7 +814,7 @@
             },
             {
                 name: "池袋駅",
-                position: { x: 300, y: 200 },
+                position: { x: 518, y: 346 },
                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/East_entrance_of_Ikebukuro_Station_2023-11-09.jpg/500px-East_entrance_of_Ikebukuro_Station_2023-11-09.jpg",
                 quiz: {
                     question: "池袋駅は1日の乗降客数が世界で何位でしょうか？",
@@ -772,7 +826,7 @@
             },
             {
                 name: "大塚駅",
-                position: { x: 380, y: 120 },
+                position: { x: 656, y: 208 },
                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Otsuka_Station_North.jpg/500px-Otsuka_Station_North.jpg",
                 quiz: {
                     question: "大塚駅周辺で有名な食べ物は何でしょうか？",
@@ -784,7 +838,7 @@
             },
             {
                 name: "巣鴨駅",
-                position: { x: 450, y: 100 },
+                position: { x: 778, y: 173 },
                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Sugamo-Sta-Building.JPG/500px-Sugamo-Sta-Building.JPG",
                 quiz: {
                     question: "巣鴨は「おばあちゃんの○○」と呼ばれています。○○に入る言葉は？",
@@ -796,7 +850,7 @@
             },
             {
                 name: "法明寺",
-                position: { x: 500, y: 180 },
+                position: { x: 864, y: 311 },
                 image: "https://www.city.toshima.lg.jp/images/34368/homyoji01.jpg",
                 quiz: {
                     question: "法明寺の三重塔は何時代に建てられたでしょうか？",
@@ -808,7 +862,7 @@
             },
             {
                 name: "目白庭園",
-                position: { x: 680, y: 240 },
+                position: { x: 1175, y: 415 },
                 image: "https://www.city.toshima.lg.jp/images/34377/mejiroteien_01.jpg",
                 quiz: {
                     question: "目白庭園はどのような様式の庭園でしょうか？",
@@ -820,7 +874,7 @@
             },
             {
                 name: "豊島区立郷土資料館",
-                position: { x: 400, y: 220 },
+                position: { x: 691, y: 380 },
                 image: "https://www.city.toshima.lg.jp/images/23995/1.jpg",
                 quiz: {
                     question: "豊島区立郷土資料館のマスコットキャラクターは何でしょうか？",
@@ -832,7 +886,7 @@
             },
             {
                 name: "長崎神社",
-                position: { x: 100, y: 240 },
+                position: { x: 173, y: 415 },
                 image: "https://www.city.toshima.lg.jp/images/34447/nagaskijinja_01.jpg",
                 quiz: {
                     question: "長崎神社に伝わる豊島区唯一の伝統芸能は何でしょうか？",
@@ -844,7 +898,7 @@
             },
             {
                 name: "目白駅",
-                position: { x: 700, y: 340 },
+                position: { x: 1210, y: 588 },
                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Mejiro-Station-Building.jpg/500px-Mejiro-Station-Building.jpg",
                 quiz: {
                     question: "目白駅周辺で有名な教育機関は何でしょうか？",
@@ -856,7 +910,7 @@
             },
             {
                 name: "池袋東貝塚",
-                position: { x: 450, y: 200 },
+                position: { x: 778, y: 346 },
                 image: "https://www.city.toshima.lg.jp/images/23709/kaidukazentaishukushou.jpg",
                 quiz: {
                     question: "池袋東貝塚は主に何時代の遺跡でしょうか？",
@@ -954,8 +1008,8 @@
                 const line = document.createElement('div');
                 line.className = 'route-line';
                 line.style.width = distance + 'px';
-                line.style.left = (currentSite.position.x + 22.5) + 'px'; // マスの中心から
-                line.style.top = (currentSite.position.y + 22.5) + 'px';
+                line.style.left = (currentSite.position.x + 39) + 'px'; // マスの中心から（さらに20%拡大対応）
+                line.style.top = (currentSite.position.y + 39) + 'px';
                 line.style.transform = `rotate(${angle}deg)`;
                 line.style.transformOrigin = '0 50%';
                 
@@ -970,14 +1024,14 @@
                 const piece = document.createElement('div');
                 piece.className = 'player-piece';
                 piece.style.backgroundColor = player.color;
-                piece.textContent = (index + 1).toString();
+                piece.textContent = player.name; // 名前を表示
                 piece.id = `player-${index}`;
                 piece.title = player.name;
                 
                 // 最初のマスに配置（重ならないように調整）
                 const firstSquare = culturalSites[0];
-                piece.style.left = (firstSquare.position.x + 10 + (index * 6)) + 'px';
-                piece.style.top = (firstSquare.position.y + 10 + (index * 3)) + 'px';
+                piece.style.left = (firstSquare.position.x + 18 + (index * 10)) + 'px';
+                piece.style.top = (firstSquare.position.y + 18 + (index * 6)) + 'px';
                 
                 board.appendChild(piece);
             });
@@ -1057,8 +1111,8 @@
             const piece = document.getElementById(`player-${gameState.currentPlayerIndex}`);
             const targetSquare = culturalSites[newPosition];
             
-            piece.style.left = (targetSquare.position.x + 10 + (gameState.currentPlayerIndex * 6)) + 'px';
-            piece.style.top = (targetSquare.position.y + 10 + (gameState.currentPlayerIndex * 3)) + 'px';
+            piece.style.left = (targetSquare.position.x + 18 + (gameState.currentPlayerIndex * 10)) + 'px';
+            piece.style.top = (targetSquare.position.y + 18 + (gameState.currentPlayerIndex * 6)) + 'px';
 
             // クイズ表示（アニメーション時間に合わせて調整）
             setTimeout(() => {
